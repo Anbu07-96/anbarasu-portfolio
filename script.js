@@ -3,46 +3,6 @@
    script.js
    ============================================ */
 
-// ── Custom Cursor ──────────────────────────
-const cursor     = document.querySelector('.cursor');
-const cursorRing = document.querySelector('.cursor-ring');
-
-let mouseX = 0, mouseY = 0;
-let ringX  = 0, ringY  = 0;
-
-document.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-  if (cursor) {
-    cursor.style.left = mouseX + 'px';
-    cursor.style.top  = mouseY + 'px';
-  }
-});
-
-// Smooth ring follows cursor with slight lag
-function animateRing() {
-  ringX += (mouseX - ringX) * 0.1;
-  ringY += (mouseY - ringY) * 0.1;
-  if (cursorRing) {
-    cursorRing.style.left = ringX + 'px';
-    cursorRing.style.top  = ringY + 'px';
-  }
-  requestAnimationFrame(animateRing);
-}
-animateRing();
-
-// Cursor grows on hoverable elements
-document.querySelectorAll('a, button, .card, .btn, .contact-link').forEach(el => {
-  el.addEventListener('mouseenter', () => {
-    if (cursor)     { cursor.style.width = '16px'; cursor.style.height = '16px'; }
-    if (cursorRing) { cursorRing.style.width = '50px'; cursorRing.style.height = '50px'; }
-  });
-  el.addEventListener('mouseleave', () => {
-    if (cursor)     { cursor.style.width = '8px'; cursor.style.height = '8px'; }
-    if (cursorRing) { cursorRing.style.width = '34px'; cursorRing.style.height = '34px'; }
-  });
-});
-
 
 // ── Page Fade In ───────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -54,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// ── Typing Animation (index.html hero only) ─
+// ── Typing Animation (index.html only) ─────
 const typingEl = document.getElementById('typing');
 const roles = [
   'Infrastructure Engineer',
@@ -62,10 +22,13 @@ const roles = [
   'Security Operations Engineer',
   'Identity & Cloud Specialist'
 ];
-let roleIndex = 0, charIndex = 0, isDeleting = false;
+let roleIndex  = 0;
+let charIndex  = 0;
+let isDeleting = false;
 
 function typeEffect() {
   if (!typingEl) return;
+
   const current = roles[roleIndex];
 
   if (!isDeleting) {
@@ -80,10 +43,11 @@ function typeEffect() {
     typingEl.textContent = current.slice(0, charIndex - 1);
     charIndex--;
     if (charIndex === 0) {
-      isDeleting  = false;
-      roleIndex   = (roleIndex + 1) % roles.length;
+      isDeleting = false;
+      roleIndex  = (roleIndex + 1) % roles.length;
     }
   }
+
   setTimeout(typeEffect, isDeleting ? 38 : 72);
 }
 
@@ -91,19 +55,18 @@ if (typingEl) typeEffect();
 
 
 // ── Active Nav Link ────────────────────────
-const navLinks = document.querySelectorAll('.nav-links a');
-const current  = window.location.pathname.split('/').pop() || 'index.html';
+const navLinks   = document.querySelectorAll('.nav-links a');
+const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 
 navLinks.forEach(link => {
   const href = link.getAttribute('href');
-  if (href === current) {
+  if (href === currentPage) {
     link.classList.add('active');
   }
 });
 
 
-// ── Skill Bar Animation ────────────────────
-// Bars animate when they scroll into view
+// ── Skill Bar Scroll Animation ─────────────
 const skillBars = document.querySelectorAll('.skill-bar-fill');
 
 if (skillBars.length > 0) {
@@ -114,7 +77,7 @@ if (skillBars.length > 0) {
         barObserver.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.3 });
+  }, { threshold: 0.4 });
 
   skillBars.forEach(bar => barObserver.observe(bar));
 }
@@ -125,8 +88,10 @@ const cards = document.querySelectorAll('.card');
 
 cards.forEach((card, i) => {
   card.style.opacity   = '0';
-  card.style.transform = 'translateY(20px)';
-  card.style.transition = `opacity 0.5s ${i * 0.07}s ease, transform 0.5s ${i * 0.07}s ease`;
+  card.style.transform = 'translateY(18px)';
+  card.style.transition =
+    `opacity 0.5s ${i * 0.06}s ease,
+     transform 0.5s ${i * 0.06}s ease`;
 });
 
 const cardObserver = new IntersectionObserver((entries) => {
@@ -137,12 +102,12 @@ const cardObserver = new IntersectionObserver((entries) => {
       cardObserver.unobserve(entry.target);
     }
   });
-}, { threshold: 0.1 });
+}, { threshold: 0.08 });
 
 cards.forEach(card => cardObserver.observe(card));
 
 
-// ── Rotating Quotes (contact.html only) ───
+// ── Rotating Quotes (contact.html only) ────
 const quoteEl = document.getElementById('quote-display');
 const quotes  = [
   "The best way to predict the future is to invent it. — Alan Kay",
@@ -152,9 +117,11 @@ const quotes  = [
   "Great things never come from comfort zones.",
   "Don't wait for opportunity. Create it.",
   "Opportunities don't happen. You create them. — Chris Grosser",
-  "Success usually comes to those too busy to be looking for it. — Thoreau",
   "Believe you can and you're halfway there. — Theodore Roosevelt",
   "Push yourself, because no one else is going to do it for you.",
+  "Success usually comes to those too busy to be looking for it. — Thoreau",
+  "Do what you can with all you have, wherever you are. — Roosevelt",
+  "Dream big and dare to fail. — Norman Vaughan"
 ];
 let quoteIndex = 0;
 
@@ -162,7 +129,7 @@ function showQuote() {
   if (!quoteEl) return;
   quoteEl.style.opacity = '0';
   setTimeout(() => {
-    quoteEl.textContent  = quotes[quoteIndex];
+    quoteEl.textContent   = quotes[quoteIndex];
     quoteEl.style.opacity = '1';
     quoteIndex = (quoteIndex + 1) % quotes.length;
   }, 500);
@@ -174,12 +141,13 @@ if (quoteEl) {
 }
 
 
-// ── Nav scroll shadow ──────────────────────
+// ── Nav Shadow on Scroll ───────────────────
+const nav = document.querySelector('nav');
+
 window.addEventListener('scroll', () => {
-  const nav = document.querySelector('nav');
   if (!nav) return;
   if (window.scrollY > 20) {
-    nav.style.boxShadow = '0 4px 30px rgba(0,0,0,0.4)';
+    nav.style.boxShadow = '0 4px 28px rgba(0,0,0,0.45)';
   } else {
     nav.style.boxShadow = 'none';
   }
